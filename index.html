@@ -1,0 +1,111 @@
+
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#121212"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg"><title>CrimsonSphere</title><style>
+:root{--r:#FF1E38;--c:#1A1A1A;--g:#B0B0B0}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#121212;color:#fff;display:flex;justify-content:center;height:100dvh;overflow:hidden}
+.hidden{display:none!important}
+#app{width:100%;max-width:480px;display:flex;flex-direction:column;position:relative}
+.hd{padding:15px;font-size:20px;font-weight:bold;border-bottom:1px solid #222;color:var(--r)}
+.tab{flex:1;overflow-y:auto;display:none;padding:15px}
+.tab.on{display:block}
+#chats.on{display:flex;flex-direction:column}
+nav{height:60px;border-top:1px solid #222;display:flex}
+nav button{flex:1;background:0;border:0;color:var(--g);font-size:14px}
+nav .on{color:var(--r);font-weight:bold}
+#ml{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:10px}
+.m{padding:10px 14px;border-radius:8px;max-width:75%;font-size:14px;word-wrap:break-word}
+.me{background:var(--r);align-self:flex-end}
+.ot{background:var(--c);color:#ddd;align-self:flex-start}
+.m b{display:block;font-size:11px;color:var(--r);margin-bottom:3px}
+.row{display:flex;gap:8px}
+input[type=text],input[type=email],input[type=password]{width:100%;background:var(--c);border:1px solid #333;color:#fff;padding:12px;border-radius:6px;font-size:15px}
+.row input{flex:1;min-width:0}
+.btn{background:var(--r);color:#fff;border:0;padding:11px 16px;border-radius:6px;font-weight:bold}
+.g{background:#333}
+.card{background:var(--c);padding:15px;border-radius:8px;margin-bottom:15px}
+.pi{width:100%;max-height:320px;object-fit:cover;border-radius:6px;margin-top:10px}
+.ph,.act{display:flex;align-items:center;gap:10px;font-weight:bold;font-size:14px}
+.act{margin-top:10px}
+.act button{background:#262626;color:#fff;border:0;padding:7px 12px;border-radius:6px}
+.act .lk{color:var(--r)}
+.av{border-radius:50%;background:#333;color:var(--r);display:flex;align-items:center;justify-content:center;font-weight:bold;overflow:hidden;flex-shrink:0}
+.av img{width:100%;height:100%;object-fit:cover}
+#auth{position:absolute;inset:0;z-index:9;background:#121212;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:28px}
+#auth h1{color:var(--r);text-align:center}
+#err{color:#ff7080;font-size:13px;min-height:18px;text-align:center}
+.em{color:var(--g);text-align:center;margin-top:20px}
+</style></head><body><div id="app">
+<div id="auth"><h1>CrimsonSphere</h1><input type="text" id="aN" placeholder="Name (signup only)"><input type="email" id="aE" placeholder="Email"><input type="password" id="aP" placeholder="Password (min 6)"><div id="err"></div><button class="btn" onclick="login()">Login</button><button class="btn g" onclick="signup()">Sign up</button></div>
+<div class="hd">CrimsonSphere</div>
+<div id="chats" class="tab on"><div id="ml"></div><div class="row" style="padding-top:10px;border-top:1px solid #222"><input type="text" id="ci" placeholder="Type a message..."><button class="btn" onclick="send()">Send</button></div></div>
+<div id="feed" class="tab"><div class="row" style="margin-bottom:15px"><input type="text" id="cap" placeholder="Write a caption..."><button class="btn" onclick="document.getElementById('ff').click()">+ Photo</button></div><input type="file" id="ff" accept="image/*" class="hidden"><div id="fc"></div></div>
+<div id="profile" class="tab"><div class="card" style="text-align:center"><input type="file" id="pf" accept="image/*" class="hidden"><div id="pa" style="display:flex;justify-content:center;cursor:pointer;margin:10px 0"></div><p style="font-size:12px;color:var(--g);margin-bottom:12px">Tap image to change photo</p><input type="text" id="pn" placeholder="Display name"><button class="btn" style="margin-top:10px;width:100%" onclick="saveName()">Save name</button><button class="btn g" style="margin-top:10px;width:100%" onclick="logout()">Logout</button><p id="pm" style="font-size:12px;color:var(--g);margin-top:10px"></p></div></div>
+<nav><button class="on" onclick="tab('chats',this)">Chats</button><button onclick="tab('feed',this)">Feed</button><button onclick="tab('profile',this)">Profile</button></nav></div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,createUserWithEmailAndPassword as cu,signInWithEmailAndPassword as si,onAuthStateChanged as oa,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection as co,addDoc,setDoc,doc,query,orderBy as ob,limit,onSnapshot as on,serverTimestamp as st,deleteDoc,updateDoc,arrayUnion as au,arrayRemove as ar}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// PASTE YOUR 6 FIREBASE VALUES BELOW (replace each PASTE)
+const cfg={apiKey:"AIzaSyASgJAaeFy5PBkNNVO7I5JAxNpXSQET4hM",authDomain:"crimsonsphere.firebaseapp.com",projectId:"crimsonsphere",storageBucket:"crimsonsphere.firebasestorage.app",messagingSenderId:"249790896388",appId:"1:249790896388:web:4f37df75f4311a003b1851"};
+const app=initializeApp(cfg),A=getAuth(app),D=getFirestore(app);
+const $=i=>document.getElementById(i);
+const E=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e};
+let me=null,U={},M=[],P=[],S=[];
+window.tab=(i,b)=>{document.querySelectorAll('.tab,nav button').forEach(e=>e.classList.remove('on'));$(i).classList.add('on');b.classList.add('on');if(i=='chats')$('ml').scrollTop=1e9};
+const cmp=(f,m,q)=>new Promise((ok,no)=>{const r=new FileReader;r.onerror=no;r.onload=()=>{const i=new Image;i.onerror=no;i.onload=()=>{const s=Math.min(1,m/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);c.getContext('2d').drawImage(i,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',q))};i.src=r.result};r.readAsDataURL(f)});
+const nm=u=>(U[u]&&U[u].name)||'User';
+const av=(u,z)=>{const d=E('div','av'),x=U[u]||{};d.style.width=d.style.height=z+'px';d.style.fontSize=z/2.5+'px';if(x.photo){const i=E('img');i.src=x.photo;d.appendChild(i)}else d.textContent=nm(u).charAt(0).toUpperCase();return d};
+const er=e=>$('err').textContent=e.code||'Error';
+window.login=async()=>{$('err').textContent='';try{await si(A,$('aE').value.trim(),$('aP').value)}catch(e){er(e)}};
+window.signup=async()=>{$('err').textContent='';const n=$('aN').value.trim();if(!n){$('err').textContent='Enter your name';return}try{const c=await cu(A,$('aE').value.trim(),$('aP').value);await setDoc(doc(D,'users',c.user.uid),{name:n,photo:''})}catch(e){er(e)}};
+window.logout=()=>signOut(A);
+function rc(){const l=$('ml');l.innerHTML='';if(!M.length)l.appendChild(E('p','em','No messages yet. Say hello!'));M.forEach(m=>{const k=me&&m.uid==me.uid,d=E('div','m '+(k?'me':'ot'));if(!k)d.appendChild(E('b','',nm(m.uid)));d.appendChild(document.createTextNode(m.text));l.appendChild(d)});l.scrollTop=1e9}
+function rf(){const b=$('fc');b.innerHTML='';if(!P.length){b.appendChild(E('p','em','No feed updates yet.'));return}P.forEach(p=>{const c=E('div','card'),h=E('div','ph');h.appendChild(av(p.uid,36));h.appendChild(E('span','',nm(p.uid)));c.appendChild(h);if(p.caption){const t=E('p','',p.caption);t.style.marginTop='10px';c.appendChild(t)}if(p.image){const i=E('img','pi');i.src=p.image;c.appendChild(i)}const L=p.likes||[],k=me&&L.includes(me.uid),a=E('div','act'),lb=E('button',k?'lk':'',(k?'♥ ':'♡ ')+L.length);lb.onclick=()=>updateDoc(doc(D,'posts',p.id),{likes:k?ar(me.uid):au(me.uid)});a.appendChild(lb);if(me&&p.uid==me.uid){const x=E('button','','Delete');x.onclick=()=>confirm('Delete this post?')&&deleteDoc(doc(D,'posts',p.id));a.appendChild(x)}c.appendChild(a);b.appendChild(c)})}
+function rp(){if(!me)return;const b=$('pa');b.innerHTML='';b.appendChild(av(me.uid,90));const i=$('pn');if(document.activeElement!=i)i.value=U[me.uid]?U[me.uid].name:''}
+window.send=async()=>{const i=$('ci'),t=i.value.trim();if(!t||!me)return;i.value='';try{await addDoc(co(D,'messages'),{text:t,uid:me.uid,time:st()})}catch(e){alert('Send failed: '+e.code)}};
+$('ci').onkeydown=e=>{if(e.key=='Enter')send()};
+$('ff').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f||!me)return;try{const image=await cmp(f,700,.6);await addDoc(co(D,'posts'),{uid:me.uid,caption:$('cap').value.trim(),image,likes:[],createdAt:st()});$('cap').value=''}catch(x){alert('Upload failed: '+(x.code||x.message))}};
+$('pa').onclick=()=>$('pf').click();
+$('pf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f||!me)return;try{await setDoc(doc(D,'users',me.uid),{photo:await cmp(f,200,.7)},{merge:true});$('pm').textContent='Photo saved'}catch(x){$('pm').textContent='Failed: '+(x.code||x.message)}};
+window.saveName=async()=>{const n=$('pn').value.trim();if(!n||!me)return;await setDoc(doc(D,'users',me.uid),{name:n},{merge:true});$('pm').textContent='Name saved'};
+const go=()=>{
+S.push(on(co(D,'users'),s=>{U={};s.forEach(d=>U[d.id]=d.data());rp();rc();rf()}));
+S.push(on(query(co(D,'messages'),ob('time','desc'),limit(100)),s=>{M=s.docs.map(d=>d.data()).reverse();rc()}));
+S.push(on(query(co(D,'posts'),ob('createdAt','desc'),limit(50)),s=>{P=s.docs.map(d=>({id:d.id,...d.data()}));rf()}))};
+oa(A,u=>{me=u;S.forEach(f=>f());S=[];if(u){$('auth').classList.add('hidden');go()}else{$('auth').classList.remove('hidden');U={};M=[];P=[]}});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+</script></body></html>
+
+باقی تین چھوٹی فائلیں (انہی ناموں سے)
+manifest.json
+{
+  "name": "CrimsonSphere",
+  "short_name": "CrimsonSphere",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
+
+sw.js
+const C = 'cs-v1';
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(C).then(c => c.addAll(['./', './index.html', './manifest.json', './icon.svg'])));
+  self.skipWaiting();
+});
+self.addEventListener('activate', e => e.waitUntil(clients.claim()));
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET' || !e.request.url.startsWith(self.location.origin)) return;
+  e.respondWith(
+    fetch(e.request)
+      .then(r => { const cp = r.clone(); caches.open(C).then(c => c.put(e.request, cp)); return r; })
+      .catch(() => caches.match(e.request))
+  );
+});
+
+icon.svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#121212"/><circle cx="256" cy="256" r="150" fill="#FF1E38"/><circle cx="215" cy="210" r="45" fill="#ff6b7c" opacity="0.6"/></svg>
+
+جب آپ کے پاس firebaseConfig آ جائے تو یہاں بھیج دیں۔ میں cfg کی پوری لائن بنا کر دوں گا۔
