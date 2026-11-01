@@ -75,37 +75,3 @@ S.push(on(query(co(D,'posts'),ob('createdAt','desc'),limit(50)),s=>{P=s.docs.map
 oa(A,u=>{me=u;S.forEach(f=>f());S=[];if(u){$('auth').classList.add('hidden');go()}else{$('auth').classList.remove('hidden');U={};M=[];P=[]}});
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 </script></body></html>
-
-باقی تین چھوٹی فائلیں (انہی ناموں سے)
-manifest.json
-{
-  "name": "CrimsonSphere",
-  "short_name": "CrimsonSphere",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#121212",
-  "theme_color": "#121212",
-  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
-}
-
-sw.js
-const C = 'cs-v1';
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(C).then(c => c.addAll(['./', './index.html', './manifest.json', './icon.svg'])));
-  self.skipWaiting();
-});
-self.addEventListener('activate', e => e.waitUntil(clients.claim()));
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET' || !e.request.url.startsWith(self.location.origin)) return;
-  e.respondWith(
-    fetch(e.request)
-      .then(r => { const cp = r.clone(); caches.open(C).then(c => c.put(e.request, cp)); return r; })
-      .catch(() => caches.match(e.request))
-  );
-});
-
-icon.svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#121212"/><circle cx="256" cy="256" r="150" fill="#FF1E38"/><circle cx="215" cy="210" r="45" fill="#ff6b7c" opacity="0.6"/></svg>
-
-جب آپ کے پاس firebaseConfig آ جائے تو یہاں بھیج دیں۔ میں cfg کی پوری لائن بنا کر دوں گا۔
