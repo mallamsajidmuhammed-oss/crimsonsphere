@@ -1,19 +1,121 @@
-
-
-CrimsonSphere
-LoginSign up
-CrimsonSphere
-
-←📞 Call
-Send
-
-PostPhoto
-
-
-Tap image to change photo
-Save nameLogout
-ChatsFeedProfile
-
-
-
-AcceptEnd
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>CrimsonSphere</title>
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><meta name="theme-color" content="#121212">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+:root{--r:#FF1E38;--c:#1A1A1A;--g:#8B8B8B}
+body{background:#121212;color:#fff;display:flex;justify-content:center;height:100dvh;overflow:hidden}
+.hide{display:none!important}
+#app{width:100%;max-width:480px;display:flex;flex-direction:column;position:relative;height:100dvh}
+.hd{display:flex;align-items:center;gap:10px;padding:10px 15px;font-size:20px;font-weight:bold;color:var(--r);border-bottom:1px solid #222}
+.lg{width:34px;height:34px;border-radius:8px}
+.view{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;min-height:0}
+nav{height:56px;display:flex;border-top:1px solid #222}
+nav button{flex:1;background:0;border:0;color:var(--g);font-size:14px}
+nav .on{color:var(--r);font-weight:bold}
+input[type=text],input[type=email],input[type=password]{width:100%;background:var(--c);border:1px solid #333;color:#fff;padding:12px;border-radius:8px;margin-bottom:8px;font-size:15px}
+.row{display:flex;gap:8px}.row input{flex:1;min-width:0}
+.btn{background:var(--r);color:#fff;border:0;padding:11px 14px;border-radius:8px;font-weight:bold;margin-bottom:8px;font-size:14px}
+.btn.s{background:#333}.btn.ok{background:#2a8f4f}
+.em{color:var(--g);font-size:13px;text-align:center;padding:10px}
+.ur{display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid #222;font-size:16px}
+.av{border-radius:50%;background:#333;color:var(--r);display:flex;align-items:center;justify-content:center;font-weight:bold;overflow:hidden;flex:none}
+.av img{width:100%;height:100%;object-fit:cover}
+#v-chat{padding:0}
+.ch{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid #222}
+.ch b{flex:1;font-size:16px}
+.bk{background:0;border:0;color:#fff;font-size:22px}
+.cb{margin:0;padding:8px 12px}
+#ml{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.m{padding:9px 13px;border-radius:12px;max-width:75%;font-size:15px;word-wrap:break-word}
+.m.me{background:var(--r);align-self:flex-end}.m.ot{background:#262626;align-self:flex-start}
+.ci{padding:8px;border-top:1px solid #222}.ci input{margin:0}.ci .btn{margin:0}
+.card{background:var(--c);padding:12px;border-radius:8px;margin-bottom:12px}
+.ph{display:flex;align-items:center;gap:8px;font-size:14px;margin-bottom:8px}
+.pi{width:100%;max-height:320px;object-fit:cover;border-radius:6px}
+.cp{margin:8px 0;font-size:14px}
+.act{display:flex;gap:8px;margin-top:8px}
+.act button{background:#262626;color:#fff;border:0;padding:6px 12px;border-radius:6px}.act .lk{color:var(--r)}
+#pa{display:flex;justify-content:center;margin-bottom:6px}
+#auth{position:absolute;inset:0;z-index:20;background:#121212;display:flex;flex-direction:column;justify-content:center;padding:25px}
+#auth h1{color:var(--r);text-align:center;margin-bottom:15px}
+#auth .lg{width:90px;height:90px;border-radius:20px;align-self:center;margin-bottom:10px}
+#err{color:#ff7080;font-size:13px;text-align:center;min-height:18px}
+#co{position:fixed;inset:0;z-index:50;background:#121212f2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+#co h2{font-size:24px}#co p{color:var(--g)}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;padding:10px 16px;border-radius:20px;font-size:14px;opacity:0;transition:.3s;pointer-events:none;z-index:60}
+#toast.show{opacity:1}
+</style></head><body>
+<div id="app">
+<div id="auth"><img src="icon-192.png" class="lg" alt=""><h1>CrimsonSphere</h1><input type="text" id="aN" placeholder="Name (signup only)"><input type="email" id="aE" placeholder="Email"><input type="password" id="aP" placeholder="Password (6+ characters)"><div class="row"><button class="btn" id="bl">Login</button><button class="btn s" id="bs">Sign up</button></div><div id="err"></div></div>
+<div class="hd"><img src="icon-192.png" class="lg" alt=""><span>CrimsonSphere</span></div>
+<div id="v-list" class="view"><div id="ul"></div></div>
+<div id="v-chat" class="view hide"><div class="ch"><button class="bk" id="bb">←</button><span id="ca"></span><b id="cn"></b><button class="btn cb" id="cb">📞 Call</button></div><div id="ml"></div><div class="row ci"><input id="ci" type="text" placeholder="Type a message..."><button class="btn" id="bsend">Send</button></div></div>
+<div id="v-feed" class="view hide"><div class="row"><input id="cap" type="text" placeholder="Write a caption..."><button class="btn" id="bpost">Post</button><button class="btn s" id="bph">Photo</button></div><input type="file" id="ff" accept="image/*" hidden><div id="fd"></div></div>
+<div id="v-prof" class="view hide"><div class="card" style="text-align:center"><div id="pa"></div><p class="em">Tap image to change photo</p><input type="file" id="pf" accept="image/*" hidden><input type="text" id="pn" placeholder="Your name"><button class="btn" id="bn">Save name</button><button class="btn s" id="blo">Logout</button></div></div>
+<nav><button data-t="chats" class="on">Chats</button><button data-t="feed">Feed</button><button data-t="prof">Profile</button></nav>
+</div>
+<div id="co" class="hide"><div id="cav"></div><h2 id="cnm"></h2><p id="cst"></p><div class="row"><button class="btn ok" id="bacc">Accept</button><button class="btn" id="brej">End</button></div></div>
+<audio id="ra" autoplay playsinline></audio><div id="toast"></div>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,createUserWithEmailAndPassword as cu,signInWithEmailAndPassword as si,onAuthStateChanged as oa,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection as co,addDoc,setDoc,doc,deleteDoc,updateDoc,query,orderBy as ob,limit,onSnapshot as on,serverTimestamp as st,arrayUnion,arrayRemove}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyASgJAaeFy5PBkNNVO7I5JAxNpXSQET4hM",authDomain:"crimsonsphere.firebaseapp.com",projectId:"crimsonsphere",storageBucket:"crimsonsphere.firebasestorage.app",messagingSenderId:"249790896388",appId:"1:249790896388:web:4f37df75f4311a003b1851"};
+const app=initializeApp(cfg),A=getAuth(app),D=getFirestore(app);
+const $=i=>document.getElementById(i);
+const E=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e};
+const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)};
+const er=e=>toast((e&&e.code)||'Error');
+let me=null,U={},P=[],unsub=[],cid=null,peer=null,uMsg=null;
+const nm=u=>(U[u]&&U[u].name)||'User';
+const av=(u,z)=>{const x=U[u]||{},d=E('div','av');d.style.cssText=`width:${z}px;height:${z}px;font-size:${z/2.3}px`;if(x.photo){const i=new Image();i.src=x.photo;d.appendChild(i)}else d.textContent=nm(u)[0].toUpperCase();return d};
+const cmp=(f,m,q)=>new Promise((ok,no)=>{const r=new FileReader();r.onerror=no;r.onload=()=>{const i=new Image();i.onerror=no;i.onload=()=>{const k=Math.min(1,m/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',q))};i.src=r.result};r.readAsDataURL(f)});
+const V=['list','chat','feed','prof'];
+const show=v=>V.forEach(k=>$('v-'+k).classList.toggle('hide',k!==v));
+function tab(n){if(uMsg){uMsg();uMsg=null}cid=null;show(n=='chats'?'list':n);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===n))}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+$('bl').onclick=async()=>{$('err').textContent='';try{await si(A,$('aE').value.trim(),$('aP').value)}catch(e){$('err').textContent=e.code||'Error'}};
+$('bs').onclick=async()=>{$('err').textContent='';const n=$('aN').value.trim();if(!n){$('err').textContent='Enter your name';return}try{const c=await cu(A,$('aE').value.trim(),$('aP').value);await setDoc(doc(D,'users',c.user.uid),{name:n})}catch(e){$('err').textContent=e.code||'Error'}};
+$('blo').onclick=()=>signOut(A);
+function rl(){const b=$('ul');b.innerHTML='';const ids=Object.keys(U).filter(i=>i!==me.uid);if(!ids.length){b.appendChild(E('p','em','No other users yet. Ask someone to sign up.'));return}ids.forEach(id=>{const r=E('div','ur');r.appendChild(av(id,44));r.appendChild(E('span','',nm(id)));r.onclick=()=>openChat(id);b.appendChild(r)})}
+function rp(){const a=$('pa');a.innerHTML='';a.appendChild(av(me.uid,110));a.onclick=()=>$('pf').click();if(document.activeElement!==$('pn'))$('pn').value=U[me.uid]?U[me.uid].name||'':''}
+function rf(){const b=$('fd');b.innerHTML='';if(!P.length){b.appendChild(E('p','em','No posts yet.'));return}P.forEach(p=>{const c=E('div','card'),h=E('div','ph');h.appendChild(av(p.uid,30));h.appendChild(E('b','',nm(p.uid)));c.appendChild(h);if(p.image){const i=new Image();i.src=p.image;i.className='pi';c.appendChild(i)}if(p.caption)c.appendChild(E('p','cp',p.caption));const a=E('div','act'),L=Array.isArray(p.likes)?p.likes:[],liked=L.includes(me.uid),lk=E('button',liked?'lk':'','♥ '+L.length);lk.onclick=()=>updateDoc(doc(D,'posts',p.id),{likes:liked?arrayRemove(me.uid):arrayUnion(me.uid)}).catch(er);a.appendChild(lk);if(p.uid===me.uid){const d=E('button','','Delete');d.onclick=()=>deleteDoc(doc(D,'posts',p.id)).catch(er);a.appendChild(d)}c.appendChild(a);b.appendChild(c)})}
+function openChat(id){peer=id;cid=[me.uid,id].sort().join('_');show('chat');$('cn').textContent=nm(id);const h=$('ca');h.innerHTML='';h.appendChild(av(id,34));if(uMsg)uMsg();uMsg=on(query(co(D,'chats',cid,'msgs'),ob('time','asc'),limit(100)),s=>{const b=$('ml');b.innerHTML='';if(s.empty)b.appendChild(E('p','em','No messages yet. Say hello!'));s.forEach(d=>{const m=d.data();b.appendChild(E('div','m '+(m.uid===me.uid?'me':'ot'),m.text))});b.scrollTop=b.scrollHeight},er)}
+$('bb').onclick=()=>tab('chats');
+async function send(){const i=$('ci'),t=i.value.trim();if(!t||!cid)return;i.value='';try{await addDoc(co(D,'chats',cid,'msgs'),{uid:me.uid,text:t,time:st()})}catch(e){er(e)}}
+$('bsend').onclick=send;$('ci').onkeydown=e=>{if(e.key=='Enter')send()};
+$('bpost').onclick=async()=>{const t=$('cap').value.trim();if(!t)return;try{await addDoc(co(D,'posts'),{uid:me.uid,caption:t,createdAt:st(),likes:[]});$('cap').value=''}catch(e){er(e)}};
+$('bph').onclick=()=>$('ff').click();
+$('ff').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f||!me)return;try{const image=await cmp(f,700,.6);await addDoc(co(D,'posts'),{uid:me.uid,caption:$('cap').value.trim(),image,createdAt:st(),likes:[]});$('cap').value=''}catch(x){er(x)}};
+$('pf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f||!me)return;try{const photo=await cmp(f,120,.7);await setDoc(doc(D,'users',me.uid),{photo},{merge:true})}catch(x){er(x)}};
+$('bn').onclick=async()=>{const n=$('pn').value.trim();if(!n||!me)return;try{await setDoc(doc(D,'users',me.uid),{name:n},{merge:true});toast('Saved')}catch(e){er(e)}};
+/* ---- voice calls (WebRTC, signaling through Firestore) ---- */
+const RT={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302']}]};
+let pc=null,ls=null,tgt=null,sid=null,inc=null,pend=[],cl=[],tmo=null,rg=null,ac=null;
+document.addEventListener('click',()=>{try{ac=ac||new AudioContext();ac.resume()}catch(e){}},{once:true});
+const beep=()=>{try{ac=ac||new AudioContext();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=480;g.gain.value=.15;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.5)}catch(e){}if(navigator.vibrate)navigator.vibrate([400,200,400])};
+const ring=x=>{clearInterval(rg);rg=null;if(x){beep();rg=setInterval(beep,2000)}};
+const callUI=(u,s,acc,end)=>{$('co').classList.remove('hide');const a=$('cav');a.innerHTML='';a.appendChild(av(u,110));$('cnm').textContent=nm(u);$('cst').textContent=s;$('bacc').classList.toggle('hide',!acc);$('brej').textContent=end};
+const flush=()=>{pend.forEach(c=>pc&&pc.addIceCandidate(c).catch(()=>{}));pend=[]};
+function mk(path){pc=new RTCPeerConnection(RT);ls.getTracks().forEach(t=>pc.addTrack(t,ls));pc.ontrack=e=>{$('ra').srcObject=e.streams[0];$('ra').play().catch(()=>{})};pc.onicecandidate=e=>{if(e.candidate)addDoc(co(D,'calls',path,'cands'),{from:me.uid,sid,c:JSON.stringify(e.candidate)}).catch(()=>{})};pc.onconnectionstatechange=()=>{const s=pc.connectionState;if(s=='connected'){clearTimeout(tmo);$('cst').textContent='Connected'}if(s=='failed'){toast('Connection failed');endCall()}};cl.push(on(co(D,'calls',path,'cands'),s=>s.docChanges().forEach(ch=>{if(ch.type!='added'||!pc)return;const d=ch.doc.data();if(d.sid!==sid||d.from===me.uid)return;const c=JSON.parse(d.c);pc.remoteDescription?pc.addIceCandidate(c).catch(()=>{}):pend.push(c)})))}
+function cleanup(){ring(false);clearTimeout(tmo);cl.forEach(f=>f());cl=[];if(pc){pc.close();pc=null}if(ls){ls.getTracks().forEach(t=>t.stop());ls=null}$('ra').srcObject=null;pend=[];inc=null;tgt=null;sid=null;$('co').classList.add('hide')}
+async function callUser(id){if(pc||inc||!me)return;try{ls=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){toast('Allow microphone to call');return}
+sid=String(Date.now());tgt=id;mk(id);callUI(id,'Calling…',false,'Cancel');
+try{const o=await pc.createOffer();await pc.setLocalDescription(o);await setDoc(doc(D,'calls',id),{from:me.uid,sid,status:'ringing',offer:{type:o.type,sdp:o.sdp}})}catch(e){toast('Call failed');cleanup();return}
+cl.push(on(doc(D,'calls',id),s=>{const d=s.data();if(!d||d.sid!==sid||!pc)return;if(d.answer&&!pc.remoteDescription){pc.setRemoteDescription(d.answer).then(flush);$('cst').textContent='Connecting…'}if(d.status=='rejected'||d.status=='ended'){toast(d.status=='rejected'?'Call declined':'Call ended');cleanup()}}));
+tmo=setTimeout(()=>{if(pc&&pc.connectionState!='connected'){toast('No answer');endCall()}},45000)}
+async function acceptCall(){if(!inc||pc)return;ring(false);try{ls=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){toast('Allow microphone');endCall();return}
+sid=inc.sid;tgt=me.uid;mk(me.uid);$('bacc').classList.add('hide');$('brej').textContent='End';$('cst').textContent='Connecting…';
+try{await pc.setRemoteDescription(inc.offer);flush();const a=await pc.createAnswer();await pc.setLocalDescription(a);await updateDoc(doc(D,'calls',me.uid),{answer:{type:a.type,sdp:a.sdp},status:'active'})}catch(e){toast('Call failed');endCall()}}
+async function endCall(){const t=tgt||(inc&&me.uid),s=(inc&&!pc)?'rejected':'ended';if(t)updateDoc(doc(D,'calls',t),{status:s}).catch(()=>{});cleanup()}
+function onIn(s){const d=s.data();
+if(inc){if(!pc){if(!d||d.sid!==inc.sid||d.status!='ringing'){ring(false);inc=null;$('co').classList.add('hide');toast('Missed call')}}else if(!d||d.status=='ended'||d.status=='rejected')cleanup();return}
+if(d&&d.status=='ringing'&&!pc&&Date.now()-Number(d.sid)<45000){inc=d;callUI(d.from,'Incoming call…',true,'Reject');ring(true)}}
+$('cb').onclick=()=>callUser(peer);$('bacc').onclick=acceptCall;$('brej').onclick=endCall;
+/* ---- session ---- */
+oa(A,u=>{unsub.forEach(f=>f());unsub=[];cleanup();me=u;if(u){$('auth').classList.add('hide');tab('chats');
+unsub.push(on(co(D,'users'),s=>{U={};s.forEach(d=>U[d.id]=d.data());rl();rp();rf()},er));
+unsub.push(on(query(co(D,'posts'),ob('createdAt','desc'),limit(50)),s=>{P=s.docs.map(d=>({id:d.id,...d.data()}));rf()},er));
+unsub.push(on(doc(D,'calls',u.uid),onIn,()=>{}))}else{$('auth').classList.remove('hide');U={};P=[]}});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+</script></body></html>
